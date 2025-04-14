@@ -1,0 +1,46 @@
+name: Iac - Terraform - Deploy
+
+on:
+  workflow_dispatch:
+    inputs:
+      Branch:
+        description: 'Branch to deploy'
+        required: true
+        default: 'main'
+      Environment:    
+        description: 'Environment to deploy'
+        required: true
+        default: 'dev'
+
+jobs:
+  CD-Iac:
+    name: CD-Iac
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+          ref: ${{ github.event.inputs.Branch }}
+
+    #   - name: Set up Terraform
+    #     uses: hashicorp/setup-terraform@v3
+    #     with:
+    #       terraform_version: 1.5.7  # You can change this to the required version
+
+    #   - name: Terraform Init
+    #     run: terraform init
+
+    #   - name: Terraform Format
+    #     run: terraform fmt -check
+
+    #   - name: Terraform Validate
+    #     run: terraform validate
+
+    #   - name: Terraform Plan
+    #     run: terraform plan -var="environment=${{ github.event.inputs.Environment }}"
+
+    #   - name: Terraform Apply
+    #     if: github.event.inputs.Environment != 'prod'  # Optional: avoid auto apply in prod
+    #     run: terraform apply -auto-approve -var="environment=${{ github.event.inputs.Environment }}"
