@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Simple Time Service</title>
+    <style>
+        body {
+            background: linear-gradient(to right, #dff9fb, #c7ecee);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            color: #2f3542;
+            text-align: center;
+            padding-top: 100px;
+        }
+        .container {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+            display: inline-block;
+            padding: 40px 80px;
+        }
+        h1 {
+            font-size: 36px;
+        }
+        p {
+            font-size: 24px;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>⏰ Simple Time Service</h1>
+        <p>Current Date & Time: <strong>{{ time }}</strong></p>
+        <p>Your IP Address: <strong>{{ ip }}</strong></p>
+    </div>
+</body>
+</html>
