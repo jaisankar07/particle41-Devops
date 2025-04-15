@@ -83,10 +83,12 @@ jobs:
 
     - name: Setup Terraform
       uses: hashicorp/setup-terraform@v2
+     
 
-    # - name: Terraform Init
-    #   working-directory: ./terraform
-    #   run: terraform init
+    - name: Terraform Init
+      working-directory: ./terraform
+      run: |
+        terraform init -backend-config=backend.${{ inputs.environment }}.conf
 
     # - name: Terraform Apply
     #   working-directory: ./terraform
