@@ -84,7 +84,7 @@ Now visit [http://localhost:5000](http://localhost:5000)
 
 ---
 
-## 🌍 Terraform – Deploying Infrastructure
+## 🌍 Terraform – Deploying Infrastructure [use the exact command]
 
 ### 1. Navigate to the Terraform Directory
 
