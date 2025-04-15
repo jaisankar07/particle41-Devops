@@ -17,7 +17,7 @@ on:
           - sit
           - uat
           - Prod
-  DESTROY:
+      DESTROY:
         description: 'Set to true to destroy infrastructure'
         required: true
         default: 'false'
