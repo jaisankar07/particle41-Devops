@@ -6,7 +6,7 @@ on:
       BRANCH:
         description: 'Source Repository Branch Name Deployment'
         required: true
-        default: 'develop'
+        default: 'main'
       ENVIRONMENT:
         description: "AWS Environment"
         required: true
@@ -18,17 +18,41 @@ on:
             - uat
             - Prod
 
+# Limit concurrent jobs to avoid terraform lock issues
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: false # we cannot cancel a running job as it causes a terraform lock issue
+ 
+# Define the permissions for the workflow
+permissions:
+  id-token: write
+  contents: read
+  attestations: write
+  pull-requests: write
+  issues: write            
+
 jobs:
   build-and-deploy:
+    environment: ${{ inputs.ENVIRONMENT }}
     runs-on: ubuntu-latest
 
     steps:
     - name: Checkout repo
       uses: actions/checkout@v4
+      with:
+        ref: ${{ github.event.inputs.BRANCH }}
+        fetch-depth: 0
 
-    # - name: Log in to DockerHub
-    #   run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
+    - name: Log in to DockerHub
+      run: |
+        echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ vars.DOCKER_USERNAME }}" --password-stdin
+        echo "✅ Successfully logged in to Docker Hub"
+      env:
+        DOCKER_USERNAME: ${{ vars.DOCKER_USERNAME }}
+        DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+        DOCKER_CLI_EXPERIMENTAL: enabled
 
+    
     # - name: Build Docker image
     #   run: docker build -t jaisankar07/simple-time-service ./app
 
