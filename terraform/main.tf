@@ -1,6 +1,6 @@
-
+# This Terraform configuration sets up an AWS ECS Fargate service with a load balancer and VPC.
 # -------- VPC and Networking ----------
-module "vpc" {
+  module "vpc" {
   source  = "terraform-aws-modules/vpc/aws"
   version = "5.1.2"
 
