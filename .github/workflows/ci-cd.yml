@@ -53,8 +53,8 @@ jobs:
         DOCKER_CLI_EXPERIMENTAL: enabled
 
     
-    # - name: Build Docker image
-    #   run: docker build -t jaisankar07/simple-time-service ./app
+    - name: Build Docker image
+      run: docker build -t jaisankar07/simple-time-service ./app
 
     # - name: Push Docker image
     #   run: docker push jaisankar07/simple-time-service
