@@ -30,39 +30,39 @@ permissions:
   issues: write
 
 jobs:
-  # Image-build-and-deploy:
-  #   environment: ${{ inputs.ENVIRONMENT }}
-  #   runs-on: ubuntu-latest
+  Image-build-and-deploy:
+    environment: ${{ inputs.ENVIRONMENT }}
+    runs-on: ubuntu-latest
 
-  #   steps:
-  #   - name: Checkout repo
-  #     uses: actions/checkout@v4
-  #     with:
-  #       ref: ${{ github.event.inputs.BRANCH }}
-  #       fetch-depth: 0
+    steps:
+    - name: Checkout repo
+      uses: actions/checkout@v4
+      with:
+        ref: ${{ github.event.inputs.BRANCH }}
+        fetch-depth: 0
 
-  #   - name: Log in to DockerHub
-  #     run: |
-  #       echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ vars.DOCKER_USERNAME }}" --password-stdin
-  #       echo "✅ Successfully logged in to Docker Hub"
-  #     env:
-  #       DOCKER_USERNAME: ${{ vars.DOCKER_USERNAME }}
-  #       DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
-  #       DOCKER_CLI_EXPERIMENTAL: enabled
+    - name: Log in to DockerHub
+      run: |
+        echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ vars.DOCKER_USERNAME }}" --password-stdin
+        echo "✅ Successfully logged in to Docker Hub"
+      env:
+        DOCKER_USERNAME: ${{ vars.DOCKER_USERNAME }}
+        DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+        DOCKER_CLI_EXPERIMENTAL: enabled
 
-  #   - name: Build Docker image
-  #     run: docker build -t jaisankar07/simple-time-service ./app
+    - name: Build Docker image
+      run: docker build -t jaisankar07/simple-time-service ./app
 
-  #   - name: Tag Docker image with version 2
-  #     run: |
-  #       docker tag jaisankar07/simple-time-service jaisankar07/simple-time-service:2
-  #       docker tag jaisankar07/simple-time-service jaisankar07/simple-time-service:latest
+    - name: Tag Docker image with version 2
+      run: |
+        docker tag jaisankar07/simple-time-service jaisankar07/simple-time-service:2
+        docker tag jaisankar07/simple-time-service jaisankar07/simple-time-service:latest
 
-  #   - name: Push Docker image
-  #     run: |
-  #       docker push jaisankar07/simple-time-service:2
-  #       docker push jaisankar07/simple-time-service:latest
-  #       echo "🐳 Successfully pushed Docker image to Docker Hub (v2 and latest tags)"
+    - name: Push Docker image
+      run: |
+        docker push jaisankar07/simple-time-service:2
+        docker push jaisankar07/simple-time-service:latest
+        echo "🐳 Successfully pushed Docker image to Docker Hub (v2 and latest tags)"
 
   Infrastructure-setup:
     environment: ${{ inputs.ENVIRONMENT }}
@@ -96,18 +96,18 @@ jobs:
         terraform plan  -var-file=terraform.${{ inputs.environment }}.tfvars  -out=tfplan 
         # terraform apply ${IS_DESTROY} -input=false -parallelism=${{ inputs.capacity-concurrency }} -auto-approve "tfplan.out"
 
-    - name: Terraform destroy
-      working-directory: ./terraform
-      run: |
-        # terraform destroy -var-file=terraform.${{ inputs.environment }}.tfvars -auto-approve
-        terraform destroy -auto-approve
-        
-
-    # - name: Terraform Apply
+    # - name: Terraform destroy  USE WHEN NEED TO DESTROY
     #   working-directory: ./terraform
     #   run: |
-    #     terraform apply -auto-approve
-    #   env:
-    #     AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-    #     AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-    #     AWS_DEFAULT_REGION: us-east-1
+    #     # terraform destroy -var-file=terraform.${{ inputs.environment }}.tfvars -auto-approve
+    #     terraform destroy -auto-approve
+        
+
+    - name: Terraform Apply
+      working-directory: ./terraform
+      run: |
+        terraform apply -auto-approve
+      env:
+        AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        AWS_DEFAULT_REGION: us-east-1
