@@ -57,7 +57,9 @@ jobs:
       run: docker build -t jaisankar07/simple-time-service ./app
 
     - name: Push Docker image
-      run: docker push jaisankar07/simple-time-service
+      run: |
+        docker push jaisankar07/simple-time-service
+        echo "🐳 Successfully pushed Docker image to Docker Hub"
 
     # - name: Setup Terraform
     #   uses: hashicorp/setup-terraform@v2
