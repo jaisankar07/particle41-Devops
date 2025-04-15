@@ -1,6 +1,8 @@
-# This Terraform configuration sets up an AWS infrastructure for a simple time service using ECS and ALB.
-# It includes a VPC, security groups, an Application Load Balancer (ALB), ECS cluster, task definition, and service.
+provider "aws" {
+  region = var.aws_region
+}
 
+# -------- VPC and Networking ----------
 module "vpc" {
   source  = "terraform-aws-modules/vpc/aws"
   version = "5.1.2"
@@ -15,15 +17,19 @@ module "vpc" {
   enable_dns_hostnames = true
   enable_dns_support   = true
 
+  enable_nat_gateway   = true
+  single_nat_gateway   = true
+
   tags = {
-    Terraform = "true"
+    Terraform   = "true"
     Environment = var.environment
   }
 }
 
+# -------- Security Groups ----------
 resource "aws_security_group" "alb_sg" {
   name        = "alb-sg"
-  description = "Allow HTTP"
+  description = "Allow HTTP from anywhere"
   vpc_id      = module.vpc.vpc_id
 
   ingress {
@@ -41,6 +47,27 @@ resource "aws_security_group" "alb_sg" {
   }
 }
 
+resource "aws_security_group" "ecs_sg" {
+  name        = "ecs-task-sg"
+  description = "Allow traffic from ALB"
+  vpc_id      = module.vpc.vpc_id
+
+  ingress {
+    from_port       = 5000
+    to_port         = 5000
+    protocol        = "tcp"
+    security_groups = [aws_security_group.alb_sg.id]
+  }
+
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+}
+
+# -------- Load Balancer ----------
 resource "aws_lb" "main" {
   name               = "simple-time-alb"
   internal           = false
@@ -50,11 +77,12 @@ resource "aws_lb" "main" {
 }
 
 resource "aws_lb_target_group" "main" {
-  name     = "simple-time-tg"
-  port     = 5000
-  protocol = "HTTP"
-  vpc_id   = module.vpc.vpc_id
+  name        = "simple-time-tg"
+  port        = 5000
+  protocol    = "HTTP"
+  vpc_id      = module.vpc.vpc_id
   target_type = "ip"
+
   health_check {
     path                = "/"
     interval            = 30
@@ -76,6 +104,7 @@ resource "aws_lb_listener" "main" {
   }
 }
 
+# -------- IAM Role ----------
 resource "aws_iam_role" "ecs_task_execution" {
   name = "ecsTaskExecutionRole"
 
@@ -96,6 +125,7 @@ resource "aws_iam_role_policy_attachment" "ecs_task_execution_attach" {
   policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy"
 }
 
+# -------- ECS Setup ----------
 resource "aws_ecs_cluster" "main" {
   name = "simple-time-service-cluster"
 }
@@ -107,9 +137,10 @@ resource "aws_ecs_task_definition" "main" {
   cpu                      = "256"
   memory                   = "512"
   execution_role_arn       = aws_iam_role.ecs_task_execution.arn
+
   container_definitions = jsonencode([{
-    name      = "simple-time-container",
-    image     = "jaisankar07/simple-time-service:latest",
+    name  = "simple-time-container",
+    image = "jaisankar07/simple-time-service:latest",
     portMappings = [{
       containerPort = 5000,
       hostPort      = 5000
@@ -127,7 +158,7 @@ resource "aws_ecs_service" "main" {
   network_configuration {
     subnets          = module.vpc.private_subnets
     assign_public_ip = false
-    security_groups  = [aws_security_group.alb_sg.id]
+    security_groups  = [aws_security_group.ecs_sg.id]
   }
 
   load_balancer {
