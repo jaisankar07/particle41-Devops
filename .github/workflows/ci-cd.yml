@@ -13,23 +13,21 @@ on:
         default: "dev"
         type: choice
         options:
-            - develoment
-            - sit
-            - uat
-            - Prod
+          - develoment
+          - sit
+          - uat
+          - Prod
 
-# Limit concurrent jobs to avoid terraform lock issues
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: false # we cannot cancel a running job as it causes a terraform lock issue
- 
-# Define the permissions for the workflow
+  cancel-in-progress: false
+
 permissions:
   id-token: write
   contents: read
   attestations: write
   pull-requests: write
-  issues: write            
+  issues: write
 
 jobs:
   build-and-deploy:
@@ -52,17 +50,20 @@ jobs:
         DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
         DOCKER_CLI_EXPERIMENTAL: enabled
 
-    
     - name: Build Docker image
       run: docker build -t jaisankar07/simple-time-service ./app
 
     - name: Tag Docker image with version 2
-      run: docker tag simple-time-service jaisankar07/simple-time-service:2  
+      run: |
+        docker tag jaisankar07/simple-time-service jaisankar07/simple-time-service:2
+        docker tag jaisankar07/simple-time-service jaisankar07/simple-time-service:latest
 
     - name: Push Docker image
       run: |
         docker push jaisankar07/simple-time-service:2
-        echo "🐳 Successfully pushed Docker image to Docker Hub (v2 - UI changes)"
+        docker push jaisankar07/simple-time-service:latest
+        echo "🐳 Successfully pushed Docker image to Docker Hub (v2 and latest tags)"
+
 
     # - name: Setup Terraform
     #   uses: hashicorp/setup-terraform@v2
