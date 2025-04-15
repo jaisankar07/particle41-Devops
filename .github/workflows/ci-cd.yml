@@ -20,7 +20,7 @@ on:
       DESTROY:
         description: 'Set to true to destroy infrastructure'
         required: true
-        default: 'false'
+        # default: 'false'
         type: boolean        
 
 concurrency:
