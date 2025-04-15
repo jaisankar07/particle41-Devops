@@ -14,7 +14,7 @@ def get_client_ip():
 @app.route('/')
 def home():
     ist = pytz.timezone('Asia/Kolkata')
-    current_time = datetime.now(ist).strftime("%H:%M:%S")
+    current_time = datetime.now(ist).strftime("%d-%b-%Y %H:%M:%S")
     user_ip = get_client_ip()
     return render_template('index.html', time=current_time, ip=user_ip)
 
