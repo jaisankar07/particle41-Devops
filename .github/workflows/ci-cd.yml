@@ -58,7 +58,7 @@ jobs:
 
     - name: Push Docker image
       run: |
-        docker push jaisankar07/simple-time-service
+        docker push jaisankar07/simple-time-service:2
         echo "🐳 Successfully pushed Docker image to Docker Hub"
 
     # - name: Setup Terraform
