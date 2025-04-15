@@ -1,8 +1,22 @@
 name: CI/CD Pipeline
 
 on:
-  push:
-    branches: [ main ]
+  workflow_dispatch:
+    inputs:
+      BRANCH:
+        description: 'Source Repository Branch Name Deployment'
+        required: true
+        default: 'develop'
+      ENVIRONMENT:
+        description: "AWS Environment"
+        required: true
+        default: "dev"
+        type: choice
+        options:
+            - develoment
+            - sit
+            - uat
+            - Prod
 
 jobs:
   build-and-deploy:
@@ -10,28 +24,28 @@ jobs:
 
     steps:
     - name: Checkout repo
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
 
-    - name: Log in to DockerHub
-      run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
+    # - name: Log in to DockerHub
+    #   run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
 
-    - name: Build Docker image
-      run: docker build -t jaisankar07/simple-time-service ./app
+    # - name: Build Docker image
+    #   run: docker build -t jaisankar07/simple-time-service ./app
 
-    - name: Push Docker image
-      run: docker push jaisankar07/simple-time-service
+    # - name: Push Docker image
+    #   run: docker push jaisankar07/simple-time-service
 
-    - name: Setup Terraform
-      uses: hashicorp/setup-terraform@v2
+    # - name: Setup Terraform
+    #   uses: hashicorp/setup-terraform@v2
 
-    - name: Terraform Init
-      working-directory: ./terraform
-      run: terraform init
+    # - name: Terraform Init
+    #   working-directory: ./terraform
+    #   run: terraform init
 
-    - name: Terraform Apply
-      working-directory: ./terraform
-      run: terraform apply -auto-approve
-      env:
-        AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-        AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        AWS_DEFAULT_REGION: us-east-1
+    # - name: Terraform Apply
+    #   working-directory: ./terraform
+    #   run: terraform apply -auto-approve
+    #   env:
+    #     AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+    #     AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+    #     AWS_DEFAULT_REGION: us-east-1
