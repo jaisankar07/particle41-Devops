@@ -90,6 +90,11 @@ jobs:
       run: |
         terraform init -backend-config=backend.${{ inputs.environment }}.conf
 
+    - name: Terraform Plan
+      working-directory: ./terraform
+      run: |
+        terraform plan  -var-file=terraform.${{ inputs.environment }}.tfvars  -out=tfplan 
+
     # - name: Terraform Apply
     #   working-directory: ./terraform
     #   run: terraform apply -auto-approve
