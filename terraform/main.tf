@@ -1,7 +1,5 @@
-
-provider "aws" {
-  region = var.aws_region
-}
+# This Terraform configuration sets up an AWS infrastructure for a simple time service using ECS and ALB.
+# It includes a VPC, security groups, an Application Load Balancer (ALB), ECS cluster, task definition, and service.
 
 module "vpc" {
   source  = "terraform-aws-modules/vpc/aws"
